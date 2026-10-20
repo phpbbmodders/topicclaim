@@ -1,0 +1,11 @@
+Subject: "{SITENAME}" — Your topic claim was given to another moderator
+
+Hello {USERNAME},
+
+{AUTHOR_NAME} gave your claim on the topic "{TOPIC_TITLE}" to another moderator.
+
+View the topic: {U_TOPIC}
+
+You are receiving this because you held this claim. Change how you are notified under Notification settings in your control panel.
+
+{EMAIL_SIG}

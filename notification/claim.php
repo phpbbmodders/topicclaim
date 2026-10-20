@@ -27,15 +27,17 @@ class claim extends \phpbb\notification\type\base
 		claims::REASON_REASSIGN	=> 'TOPICCLAIM_NOTIFICATION_REASSIGN',
 	];
 
-	/** Language keys of the email wording, by reason */
-	const EMAIL_CHANGES = [
-		claims::REASON_TRANSFER	=> 'TOPICCLAIM_EMAIL_TRANSFER',
-		claims::REASON_TAKEOVER	=> 'TOPICCLAIM_EMAIL_TAKEOVER',
-		claims::REASON_RELEASE	=> 'TOPICCLAIM_EMAIL_RELEASE',
-		claims::REASON_REASSIGN	=> 'TOPICCLAIM_EMAIL_REASSIGN',
+	/** Email templates, by reason, so the whole email is in the recipient's language */
+	const EMAIL_TEMPLATES = [
+		claims::REASON_TRANSFER	=> '@phpbbmodders_topicclaim/topicclaim_transfer',
+		claims::REASON_TAKEOVER	=> '@phpbbmodders_topicclaim/topicclaim_takeover',
+		claims::REASON_RELEASE	=> '@phpbbmodders_topicclaim/topicclaim_release',
+		claims::REASON_REASSIGN	=> '@phpbbmodders_topicclaim/topicclaim_reassign',
 	];
 
-	protected $notify_icon = 'notify_phpbb';
+	/** Keeps item IDs positive signed 32-bit integers, as the notifications table stores them */
+	const ITEM_ID_MASK = 0x7fffffff;
+
 	protected $permission = 'm_topicclaim';
 
 	public static $notification_option = [
@@ -81,7 +83,7 @@ class claim extends \phpbb\notification\type\base
 	 */
 	public static function get_item_id($type_data)
 	{
-		return (int) (crc32($type_data['topic_id'] . '|' . $type_data['actor_id'] . '|' . $type_data['recipient_id'] . '|' . $type_data['reason'] . '|' . $type_data['time']) & 0x7fffffff);
+		return (int) (crc32($type_data['topic_id'] . '|' . $type_data['actor_id'] . '|' . $type_data['recipient_id'] . '|' . $type_data['reason'] . '|' . $type_data['time']) & self::ITEM_ID_MASK);
 	}
 
 	public static function get_item_parent_id($type_data)
@@ -171,15 +173,12 @@ class claim extends \phpbb\notification\type\base
 
 	public function get_email_template()
 	{
-		return '@phpbbmodders_topicclaim/topicclaim_notify';
+		return self::EMAIL_TEMPLATES[$this->get_data('reason')] ?? self::EMAIL_TEMPLATES[claims::REASON_RELEASE];
 	}
 
 	public function get_email_template_variables()
 	{
-		$change = self::EMAIL_CHANGES[$this->get_data('reason')] ?? self::EMAIL_CHANGES[claims::REASON_RELEASE];
-
 		return [
-			'CLAIM_CHANGE'	=> $this->language->lang($change),
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($this->user_loader->get_username($this->get_data('actor_id'), 'username'), ENT_COMPAT),
 			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
 			'U_TOPIC'		=> generate_board_url() . '/viewtopic.' . $this->php_ext . '?t=' . (int) $this->get_data('topic_id'),
