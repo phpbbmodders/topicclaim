@@ -16,6 +16,18 @@ Lets moderators claim a topic to tell the other moderators they are looking afte
 - Claims go away with their topic or their moderator when either is deleted.
 - Screen-reader text and labels on the claim marks, notice, list and forms.
 
+## Screenshots
+
+<table>
+<tr>
+<td><a href="docs/images/screenshots/topicclaim-viewforum.png"><img src="docs/images/screenshots/topicclaim-viewforum.png" width="280" alt="Claimed topics in a forum's topic list"></a></td>
+<td><a href="docs/images/screenshots/topicclaim-manage.png"><img src="docs/images/screenshots/topicclaim-manage.png" width="280" alt="Claim page with take over, transfer and release"></a></td>
+<td><a href="docs/images/screenshots/topicclaim-mcp.png"><img src="docs/images/screenshots/topicclaim-mcp.png" width="280" alt="MCP Claimed topics list"></a></td>
+</tr>
+</table>
+
+Click an image for the full size. See the [screenshot gallery](docs/images/screenshots/README.md) for the rest.
+
 ## Permissions
 
 | Permission | Where | Default |
