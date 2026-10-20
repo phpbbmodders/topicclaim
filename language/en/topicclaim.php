@@ -51,6 +51,8 @@ $lang = array_merge($lang, [
 	'TOPICCLAIM_TRANSFER_EXPLAIN'	=> 'Moderators who can claim topics in this forum. They are told.',
 	'TOPICCLAIM_RELEASE'			=> 'Release claim',
 	'TOPICCLAIM_RELEASE_EXPLAIN'	=> 'Removes the claim, so another moderator can claim the topic.',
+	'TOPICCLAIM_RELEASE_CONFIRM'	=> 'Are you sure you want to release the claim on this topic?',
+	'TOPICCLAIM_TAKEOVER_CONFIRM'	=> 'Are you sure you want to take over this claim? The moderator who holds it is told.',
 	'TOPICCLAIM_VIEW_ONLY'			=> 'Only the moderator who holds the claim, or an administrator, can change it.',
 	'TOPICCLAIM_LOCKED_NOTICE'		=> 'This topic is locked. The board releases claims on locked topics, so it cannot be claimed.',
 	'TOPICCLAIM_LOCKED_RELEASE'		=> 'The board releases claims on locked topics. Locking this topic releases its claim.',
@@ -59,6 +61,8 @@ $lang = array_merge($lang, [
 		2	=> 'The board releases claims after %d days.',
 	],
 	'TOPICCLAIM_RETURN_LIST'		=> '%sReturn to the claimed topics%s',
+	'TOPICCLAIM_RETURN_TOPIC'		=> 'Return to the topic',
+	'TOPICCLAIM_RETURN_CLAIMS'		=> 'Return to the claimed topics',
 
 	// Results
 	'TOPICCLAIM_CLAIMED'			=> 'You claimed the topic.',
@@ -91,11 +95,6 @@ $lang = array_merge($lang, [
 	'TOPICCLAIM_NOTIFICATION_TAKEOVER'	=> '<strong>Topic claim</strong> taken over by %1$s:',
 	'TOPICCLAIM_NOTIFICATION_RELEASE'	=> '<strong>Topic claim</strong> released by %1$s:',
 	'TOPICCLAIM_NOTIFICATION_REASSIGN'	=> '<strong>Topic claim</strong> given to another moderator by %1$s:',
-	'TOPICCLAIM_EMAIL_TRANSFER'			=> 'transferred to you the claim on',
-	'TOPICCLAIM_EMAIL_TAKEOVER'			=> 'took over your claim on',
-	'TOPICCLAIM_EMAIL_RELEASE'			=> 'released your claim on',
-	'TOPICCLAIM_EMAIL_REASSIGN'			=> 'gave another moderator your claim on',
-
 	// Logs
 	'LOG_TOPICCLAIM_CLAIM'			=> '<strong>Claimed topic</strong><br />» %s',
 	'LOG_TOPICCLAIM_TAKEOVER'		=> '<strong>Took over the claim of %2$s on topic</strong><br />» %1$s',

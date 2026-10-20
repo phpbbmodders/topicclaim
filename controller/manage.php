@@ -32,6 +32,18 @@ class manage
 	/** Form key name */
 	const FORM_KEY = 'phpbbmodders_topicclaim';
 
+	/** Seconds the result message shows before going back */
+	const REDIRECT_DELAY = 3;
+
+	/**
+	 * Buttons that ask for confirmation first, with the title key confirm_box() uses.
+	 * It adds _CONFIRM for the question: TOPICCLAIM_RELEASE_CONFIRM, TOPICCLAIM_TAKEOVER_CONFIRM.
+	 */
+	const CONFIRM_ACTIONS = [
+		'release'	=> 'TOPICCLAIM_RELEASE',
+		'takeover'	=> 'TOPICCLAIM_TAKEOVER',
+	];
+
 	/** @var auth */
 	protected $auth;
 
@@ -118,22 +130,42 @@ class manage
 		$u_topic = append_sid("{$this->root_path}viewtopic.{$this->php_ext}", 't=' . $topic['topic_id']);
 		$u_page = $this->helper->route('phpbbmodders_topicclaim_manage', ['topic_id' => $topic['topic_id']]);
 		$u_return = $this->get_return_url($u_topic);
+		$u_action = $u_page . ($u_return !== $u_topic ? (strpos($u_page, '?') === false ? '?' : '&amp;') . 'return=mcp' : '');
 
 		add_form_key(self::FORM_KEY);
 
 		$action = $this->get_action();
 		if ($action !== '')
 		{
-			if (!check_form_key(self::FORM_KEY))
+			// "No" on the confirmation page: back to the claim page
+			if ($this->request->is_set_post('cancel'))
 			{
-				trigger_error($this->language->lang('FORM_INVALID') . $this->return_links($u_page, $u_topic, $u_return), E_USER_WARNING);
+				redirect(str_replace('&amp;', '&', $u_action));
+			}
+
+			$needs_confirm = isset(self::CONFIRM_ACTIONS[$action]);
+			$confirmed = $needs_confirm && confirm_box(true);
+
+			// confirm_box() checks its own key; every other submit has the form token
+			if (!$confirmed && !check_form_key(self::FORM_KEY))
+			{
+				trigger_error($this->language->lang('FORM_INVALID') . $this->return_links($u_topic, $u_return), E_USER_WARNING);
+			}
+
+			if ($needs_confirm && !$confirmed)
+			{
+				confirm_box(false, self::CONFIRM_ACTIONS[$action], build_hidden_fields([
+					'topicclaim_action'	=> $action,
+					// Already HTML-escaped by request_interface
+					'topicclaim_note'	=> $this->request->variable('topicclaim_note', '', true),
+				]), 'confirm_body.html', $u_action);
 			}
 
 			$message = $this->run_action($action, $topic, $claim);
-			$this->finish($message, $u_page, $u_topic, $u_return);
+			$this->finish($message, $u_topic, $u_return);
 		}
 
-		$this->assign_page($topic, $claim, $u_page, $u_topic, $u_return);
+		$this->assign_page($topic, $claim, $u_action, $u_topic, $u_return);
 
 		return $this->helper->render('@phpbbmodders_topicclaim/topicclaim_manage.html', $this->language->lang('TOPICCLAIM_PAGE_TITLE'));
 	}
@@ -189,71 +221,70 @@ class manage
 			return 'TOPICCLAIM_NOT_CLAIMED';
 		}
 
+		// Take over is for another moderator's claim; the rest for the holder or an administrator
+		$allowed = ($action === 'takeover') ? (!$this->claims->is_own($claim) && $this->claims->can_override()) : $this->claims->can_manage($claim, $topic['forum_id']);
+		if (!$allowed)
+		{
+			return 'TOPICCLAIM_NOT_ALLOWED';
+		}
+
 		switch ($action)
 		{
 			case 'note':
-				if (!$this->claims->can_manage($claim, $topic['forum_id']))
-				{
-					break;
-				}
 				$this->claims->set_note($topic, $note);
-				return 'TOPICCLAIM_NOTE_SAVED';
+				$message = 'TOPICCLAIM_NOTE_SAVED';
+			break;
 
 			case 'takeover':
-				if ($this->claims->is_own($claim) || !$this->claims->can_override())
-				{
-					break;
-				}
 				$this->claims->take_over($topic, $claim, $note);
-				return 'TOPICCLAIM_TAKEN_OVER';
+				$message = 'TOPICCLAIM_TAKEN_OVER';
+			break;
 
 			case 'transfer':
-				if (!$this->claims->can_manage($claim, $topic['forum_id']))
-				{
-					break;
-				}
-
 				$user_id = $this->request->variable('topicclaim_user', 0);
 				$moderators = $this->claims->get_moderators($topic['forum_id']);
 				if (!isset($moderators[$user_id]) || $user_id === $claim['user_id'])
 				{
-					return 'TOPICCLAIM_TRANSFER_INVALID';
+					$message = 'TOPICCLAIM_TRANSFER_INVALID';
+					break;
 				}
 
 				$this->claims->transfer($topic, $claim, $user_id, $moderators[$user_id]);
-				return 'TOPICCLAIM_TRANSFERRED';
+				$message = 'TOPICCLAIM_TRANSFERRED';
+			break;
 
 			case 'release':
-				if (!$this->claims->can_manage($claim, $topic['forum_id']))
-				{
-					break;
-				}
 				$this->claims->release($topic, $claim);
-				return 'TOPICCLAIM_RELEASED';
+				$message = 'TOPICCLAIM_RELEASED';
+			break;
+
+			default:
+				// get_action() only returns the buttons above
+				$message = 'TOPICCLAIM_NOT_ALLOWED';
+			break;
 		}
 
-		return 'TOPICCLAIM_NOT_ALLOWED';
+		return $message;
 	}
 
 	/**
 	 * Show the result of a button and go back to where the user came from
 	 *
 	 * @param string $message Language key
-	 * @param string $u_page
 	 * @param string $u_topic
 	 * @param string $u_return
 	 * @return void
 	 */
-	protected function finish($message, $u_page, $u_topic, $u_return)
+	protected function finish($message, $u_topic, $u_return)
 	{
 		$success = in_array($message, ['TOPICCLAIM_CLAIMED', 'TOPICCLAIM_NOTE_SAVED', 'TOPICCLAIM_TAKEN_OVER', 'TOPICCLAIM_TRANSFERRED', 'TOPICCLAIM_RELEASED'], true);
 
 		if ($success)
 		{
-			meta_refresh(3, $u_return);
+			meta_refresh(self::REDIRECT_DELAY, $u_return);
 		}
 
-		trigger_error($this->language->lang($message) . $this->return_links($u_page, $u_topic, $u_return), $success ? E_USER_NOTICE : E_USER_WARNING);
+		trigger_error($this->language->lang($message) . $this->return_links($u_topic, $u_return), $success ? E_USER_NOTICE : E_USER_WARNING);
 	}
 
 	/**
@@ -261,12 +292,12 @@ class manage
 	 *
 	 * @param array $topic
 	 * @param array|null $claim
-	 * @param string $u_page
+	 * @param string $u_action Where the page's form posts to
 	 * @param string $u_topic
 	 * @param string $u_return
 	 * @return void
 	 */
-	protected function assign_page(array $topic, $claim, $u_page, $u_topic, $u_return)
+	protected function assign_page(array $topic, $claim, $u_action, $u_topic, $u_return)
 	{
 		$can_manage = $claim !== null && $this->claims->can_manage($claim, $topic['forum_id']);
 		$moderators = [];
@@ -290,12 +321,11 @@ class manage
 			'TOPICCLAIM_FORUM_NAME'		=> $topic['forum_name'],
 			'U_TOPICCLAIM_TOPIC'		=> $u_topic,
 			'U_TOPICCLAIM_FORUM'		=> append_sid("{$this->root_path}viewforum.{$this->php_ext}", 'f=' . $topic['forum_id']),
-			'U_TOPICCLAIM_ACTION'		=> $u_page . ($u_return !== $u_topic ? (strpos($u_page, '?') === false ? '?' : '&amp;') . 'return=mcp' : ''),
+			'U_TOPICCLAIM_ACTION'		=> $u_action,
 			'U_TOPICCLAIM_RETURN'		=> $u_return,
 			'S_TOPICCLAIM_RETURN_MCP'	=> $u_return !== $u_topic,
 
 			'S_TOPICCLAIM_CLAIMED'		=> $claim !== null,
-			'S_TOPICCLAIM_OWN'			=> $claim !== null && $this->claims->is_own($claim),
 			'S_TOPICCLAIM_CAN_MANAGE'	=> $can_manage,
 			'S_TOPICCLAIM_CAN_TAKEOVER'	=> $claim !== null && !$this->claims->is_own($claim) && $this->claims->can_override(),
 			'S_TOPICCLAIM_CAN_TRANSFER'	=> $can_manage && !empty($moderators),
@@ -344,14 +374,13 @@ class manage
 	}
 
 	/**
-	 * Links back to the page, the topic and, when it is different, the MCP list
+	 * Links back to the topic and, when the page was opened from it, the MCP list
 	 *
-	 * @param string $u_page
 	 * @param string $u_topic
 	 * @param string $u_return
 	 * @return string HTML
 	 */
-	protected function return_links($u_page, $u_topic, $u_return)
+	protected function return_links($u_topic, $u_return)
 	{
 		$links = '<br /><br />' . $this->language->lang('RETURN_TOPIC', '<a href="' . $u_topic . '">', '</a>');
 

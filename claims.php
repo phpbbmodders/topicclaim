@@ -27,6 +27,9 @@ class claims
 	/** Longest note, in characters; the column holds 255 */
 	const NOTE_MAX_LENGTH = 255;
 
+	/** Seconds in a day, for the release-after-days setting */
+	const SECONDS_PER_DAY = 86400;
+
 	/** Notification reasons */
 	const REASON_TRANSFER = 'transfer';
 	const REASON_TAKEOVER = 'takeover';
@@ -497,7 +500,7 @@ class claims
 	{
 		$sql = 'SELECT topic_id
 			FROM ' . $this->claims_table . '
-			WHERE claim_time < ' . (time() - (int) $days * 86400);
+			WHERE claim_time < ' . (time() - (int) $days * self::SECONDS_PER_DAY);
 
 		return $this->fetch_topic_ids($sql);
 	}

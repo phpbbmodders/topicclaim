@@ -51,7 +51,16 @@ class main_module
 			array_keys($auth->acl_getf('f_read', true))
 		));
 
-		list($rows, $total) = $claims->get_list($forum_ids, $show === 'mine' ? (int) $user->data['user_id'] : 0, $start, self::PER_PAGE);
+		$user_id = ($show === 'mine') ? (int) $user->data['user_id'] : 0;
+		list($rows, $total) = $claims->get_list($forum_ids, $user_id, $start, self::PER_PAGE);
+
+		// A page past the end (claims released since) goes to the last page
+		$valid_start = $pagination->validate_start($start, self::PER_PAGE, $total);
+		if ($valid_start !== $start)
+		{
+			$start = $valid_start;
+			list($rows, $total) = $claims->get_list($forum_ids, $user_id, $start, self::PER_PAGE);
+		}
 
 		foreach ($rows as $row)
 		{
@@ -66,7 +75,6 @@ class main_module
 				'U_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $row['topic_id']),
 				'U_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 				'U_MANAGE'		=> $u_manage . (strpos($u_manage, '?') === false ? '?' : '&amp;') . 'return=mcp',
-				'S_OWN'			=> $claims->is_own($row),
 				'S_CAN_MANAGE'	=> $claims->can_manage($row, $row['forum_id']),
 				'S_LOCKED'		=> $row['topic_status'] === ITEM_LOCKED,
 			]);
@@ -82,7 +90,6 @@ class main_module
 			'U_TOPICCLAIM_MINE'		=> $this->u_action . '&amp;show=mine',
 			'S_TOPICCLAIM_EXPIRE'	=> (int) $config['topicclaim_expire_days'] > 0,
 			'TOPICCLAIM_EXPIRE'		=> $language->lang('TOPICCLAIM_EXPIRE_NOTICE', (int) $config['topicclaim_expire_days']),
-			'S_TOPICCLAIM_RELEASE_LOCKED'	=> !empty($config['topicclaim_release_locked']),
 		]);
 	}
 }
