@@ -16,6 +16,8 @@ Lets moderators claim a topic to tell the other moderators they are looking afte
 - Claims go away with their topic or their moderator when either is deleted.
 - Screen-reader text and labels on the claim marks, notice, list and forms.
 
+The [wiki](https://github.com/phpbbmodders/topicclaim/wiki) has the full documentation: claiming topics, settings and permissions, and troubleshooting.
+
 ## Screenshots
 
 <table>
