@@ -1,0 +1,5 @@
+phpbbmodders_topicclaim_manage:
+    path: /topicclaim/{topic_id}
+    defaults: { _controller: phpbbmodders.topicclaim.controller.manage:handle }
+    requirements:
+        topic_id: \d+

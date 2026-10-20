@@ -1,0 +1,9 @@
+{% if S_TOPICCLAIM %}
+<div class="topicclaim-notice{% if S_TOPICCLAIM_OWN %} topicclaim-own{% endif %}" role="note" aria-label="{{ lang('TOPICCLAIM_PAGE_TITLE')|e('html_attr') }}">
+	<i class="icon fas fa-fw {{ TOPICCLAIM_ICON }}" aria-hidden="true"></i>
+	{% if S_TOPICCLAIM_OWN %}{{ lang('TOPICCLAIM_CLAIMED_BY_YOU') }}{% else %}{{ lang('TOPICCLAIM_CLAIMED_BY_SHORT', TOPICCLAIM_USER_FULL) }}{% endif %}
+	<span class="topicclaim-time"><span aria-hidden="true">&bull;</span><span class="sr-only">{{ lang('COMMA_SEPARATOR') }}</span> {{ TOPICCLAIM_TIME }}</span>
+	{% if TOPICCLAIM_NOTE %}<span class="topicclaim-note"><span aria-hidden="true">&bull;</span><span class="sr-only">{{ lang('COMMA_SEPARATOR') }}{{ lang('TOPICCLAIM_NOTE') }}{{ lang('COLON') }}</span> {{ TOPICCLAIM_NOTE }}</span>{% endif %}
+	<span aria-hidden="true">&bull;</span> <a href="{{ U_TOPICCLAIM }}">{{ lang('TOPICCLAIM_MANAGE') }}</a>
+</div>
+{% endif %}

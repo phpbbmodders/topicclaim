@@ -1,0 +1,8 @@
+{# Claim mark on a topic list row. Expects tc: the row's template variables.
+   The title tooltip is for mouse users; the sr-only text gives screen readers
+   the same date and note. #}
+<div class="topicclaim-mark{% if tc.S_TOPICCLAIM_OWN %} topicclaim-own{% endif %}">
+	<a href="{{ tc.U_TOPICCLAIM }}" title="{{ tc.TOPICCLAIM_TITLE }}"><i class="icon fas fa-fw {{ TOPICCLAIM_ICON }}" aria-hidden="true"></i>
+	{%- if tc.S_TOPICCLAIM_OWN %}{{ lang('TOPICCLAIM_CLAIMED_BY_YOU') }}{% else %}{{ lang('TOPICCLAIM_CLAIMED_BY_SHORT', tc.TOPICCLAIM_USER) }}{% endif -%}
+	<span class="sr-only">{{ lang('COMMA_SEPARATOR') }}{{ tc.TOPICCLAIM_TIME }}{% if tc.TOPICCLAIM_NOTE %}{{ lang('COMMA_SEPARATOR') }}{{ lang('TOPICCLAIM_NOTE') }}{{ lang('COLON') }} {{ tc.TOPICCLAIM_NOTE }}{% endif %}{{ lang('COMMA_SEPARATOR') }}{{ lang('TOPICCLAIM_MANAGE') }}</span></a>
+</div>

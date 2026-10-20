@@ -1,0 +1,43 @@
+/* Topic Claim: marks on claimed topics, seen only by moderators */
+
+.topicclaim-mark {
+	font-size: 0.95em;
+	margin: 2px 0;
+}
+
+.topicclaim-mark a,
+.topicclaim-notice {
+	color: #8f5b00;
+}
+
+.topicclaim-mark.topicclaim-own a,
+.topicclaim-notice.topicclaim-own {
+	color: #1f7a3a;
+}
+
+.topicclaim-notice {
+	background-color: #fff6e0;
+	border: 1px solid #f0d58c;
+	border-radius: 4px;
+	margin: 0 0 8px;
+	padding: 4px 8px;
+}
+
+.topicclaim-notice.topicclaim-own {
+	background-color: #eaf7ee;
+	border-color: #a9dbb8;
+}
+
+.topicclaim-note {
+	font-style: italic;
+	overflow-wrap: anywhere;
+}
+
+.topicclaim-page dd textarea,
+.topicclaim-page dd input.inputbox {
+	max-width: 100%;
+}
+
+.topicclaim-list .topicclaim-note {
+	display: block;
+}

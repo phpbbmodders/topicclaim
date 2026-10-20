@@ -1,0 +1,39 @@
+{% include 'overall_header.html' %}
+
+<h1>{{ lang('ACP_TOPICCLAIM') }}</h1>
+<p>{{ lang('ACP_TOPICCLAIM_SETTINGS_EXPLAIN') }}</p>
+
+<form id="acp_topicclaim" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('TOPICCLAIM_RELEASE_SETTINGS') }}</legend>
+		<p id="topicclaim_release_cron">{{ lang('TOPICCLAIM_RELEASE_CRON') }}</p>
+		<dl>
+			<dt><label for="topicclaim_release_locked">{{ lang('TOPICCLAIM_RELEASE_LOCKED') }}{{ lang('COLON') }}</label><br><span id="topicclaim_release_locked_explain">{{ lang('TOPICCLAIM_RELEASE_LOCKED_EXPLAIN') }}</span></dt>
+			<dd><input type="checkbox" id="topicclaim_release_locked" name="topicclaim_release_locked" value="1" aria-describedby="topicclaim_release_locked_explain"{% if S_TOPICCLAIM_RELEASE_LOCKED %} checked{% endif %}></dd>
+		</dl>
+		<dl>
+			<dt><label for="topicclaim_expire_days">{{ lang('TOPICCLAIM_EXPIRE_DAYS') }}{{ lang('COLON') }}</label><br><span id="topicclaim_expire_days_explain">{{ lang('TOPICCLAIM_EXPIRE_DAYS_EXPLAIN') }}</span></dt>
+			<dd><input type="number" id="topicclaim_expire_days" name="topicclaim_expire_days" value="{{ TOPICCLAIM_EXPIRE_DAYS }}" min="0" max="{{ TOPICCLAIM_EXPIRE_DAYS_MAX }}" size="5" aria-describedby="topicclaim_expire_days_explain topicclaim_expire_days_unit"> <span id="topicclaim_expire_days_unit">{{ lang('DAYS') }}</span></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('TOPICCLAIM_DISPLAY_SETTINGS') }}</legend>
+		<dl>
+			<dt><label for="topicclaim_icon">{{ lang('TOPICCLAIM_ICON') }}{{ lang('COLON') }}</label><br><span id="topicclaim_icon_explain">{{ lang('TOPICCLAIM_ICON_EXPLAIN') }}</span></dt>
+			<dd>
+				<input type="text" id="topicclaim_icon" name="topicclaim_icon" value="{{ TOPICCLAIM_ICON|e('html_attr') }}" maxlength="{{ TOPICCLAIM_ICON_MAX_LENGTH }}" required pattern="fa-[a-z0-9]+(-[a-z0-9]+)*" spellcheck="false" autocomplete="off" aria-describedby="topicclaim_icon_explain">
+				<i class="icon {{ TOPICCLAIM_ICON|e('html_attr') }} fas fa-fw" aria-hidden="true" title="{{ lang('TOPICCLAIM_ICON_PREVIEW')|e('html_attr') }}"></i>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{{ lang('SUBMIT') }}</legend>
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT')|e('html_attr') }}">&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET')|e('html_attr') }}">
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

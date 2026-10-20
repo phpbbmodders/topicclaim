@@ -1,0 +1,33 @@
+{
+	"name": "phpbbmodders/topicclaim",
+	"type": "phpbb-extension",
+	"description": "Lets moderators claim a topic to tell the other moderators they are looking after it, with a list of claims to transfer or release.",
+	"homepage": "https://www.phpbbmodders.com/",
+	"version": "1.0.0-dev",
+	"keywords": [
+		"phpbb",
+		"extension",
+		"moderation",
+		"moderator",
+		"topic"
+	],
+	"license": "GPL-2.0-only",
+	"authors": [
+		{
+			"name": "phpBB Modders",
+			"email": "board@phpbbmodders.com",
+			"homepage": "https://www.phpbbmodders.com/",
+			"role": "Extension Developer"
+		}
+	],
+	"require": {
+		"php": ">=7.4",
+		"composer/installers": "^1.0 || ^2.0"
+	},
+	"extra": {
+		"display-name": "Topic Claim",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.3.19,<4.1.0@dev"
+		}
+	}
+}

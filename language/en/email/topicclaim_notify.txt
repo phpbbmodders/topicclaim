@@ -1,0 +1,11 @@
+Subject: "{SITENAME}" — Topic claim changed
+
+Hello {USERNAME},
+
+{AUTHOR_NAME} {CLAIM_CHANGE} the topic "{TOPIC_TITLE}".
+
+View the topic: {U_TOPIC}
+
+You are receiving this because you claimed the topic, or a claim on it was transferred to you. Change how you are notified under Notification settings in your control panel.
+
+{EMAIL_SIG}

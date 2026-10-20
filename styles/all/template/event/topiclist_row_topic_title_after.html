@@ -1,0 +1,8 @@
+{# Used by viewforum and the MCP forum view (topicrow) and by topic search results (searchresults) #}
+{% if topicrow.S_TOPICCLAIM %}
+	{% set tc = topicrow %}
+	{% include '@phpbbmodders_topicclaim/topicclaim_mark.html' %}
+{% elseif searchresults.S_TOPICCLAIM %}
+	{% set tc = searchresults %}
+	{% include '@phpbbmodders_topicclaim/topicclaim_mark.html' %}
+{% endif %}

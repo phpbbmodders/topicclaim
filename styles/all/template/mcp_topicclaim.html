@@ -1,0 +1,80 @@
+{% include 'mcp_header.html' %}
+
+<h2>{{ lang('MCP_TOPICCLAIM_CLAIMS') }}</h2>
+
+<div class="panel topicclaim-list">
+	<div class="inner">
+
+	<p>{{ lang('TOPICCLAIM_LIST_EXPLAIN') }}
+		{% if S_TOPICCLAIM_EXPIRE %}{{ TOPICCLAIM_EXPIRE }}{% endif %}
+	</p>
+
+	<nav aria-label="{{ lang('TOPICCLAIM_FILTER')|e('html_attr') }}">
+	<ul class="linklist">
+		<li><a href="{{ U_TOPICCLAIM_ALL }}"{% if not S_TOPICCLAIM_MINE %} aria-current="page"><strong>{{ lang('TOPICCLAIM_SHOW_ALL') }}</strong>{% else %}>{{ lang('TOPICCLAIM_SHOW_ALL') }}{% endif %}</a></li>
+		<li><span aria-hidden="true">&bull;</span> <a href="{{ U_TOPICCLAIM_MINE }}"{% if S_TOPICCLAIM_MINE %} aria-current="page"><strong>{{ lang('TOPICCLAIM_SHOW_MINE') }}</strong>{% else %}>{{ lang('TOPICCLAIM_SHOW_MINE') }}{% endif %}</a></li>
+	</ul>
+	</nav>
+
+	{% if loops.topicclaim|length %}
+		<div class="action-bar bar-top">
+			<div class="pagination">
+				{{ TOPICCLAIM_TOTAL }}
+				{% if loops.pagination|length %}
+					{% include 'pagination.html' %}
+				{% else %}
+					&bull; {{ PAGE_NUMBER }}
+				{% endif %}
+			</div>
+		</div>
+
+		<ul class="topiclist missing-column">
+			<li class="header">
+				<dl>
+					<dt><div class="list-inner">{{ lang('TOPIC') }}</div></dt>
+					<dd class="moderation"><span>{{ lang('TOPICCLAIM_HELD_BY') }}</span></dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist cplist missing-column responsive-show-all" aria-label="{{ lang('MCP_TOPICCLAIM_CLAIMS')|e('html_attr') }}">
+		{% for claim in loops.topicclaim %}
+			<li class="row{% if loop.index is odd %} bg1{% else %} bg2{% endif %}">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<a href="{{ claim.U_TOPIC }}" class="topictitle">{{ claim.TOPIC_TITLE }}</a>
+							{% if claim.S_LOCKED %}<i class="icon fas fa-fw fa-lock" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPICCLAIM_TOPIC_LOCKED') }}</span>{% endif %}<br>
+							<span>{{ lang('FORUM') }}{{ lang('COLON') }} <a href="{{ claim.U_FORUM }}">{{ claim.FORUM_NAME }}</a></span>
+							{% if claim.NOTE %}<span class="topicclaim-note"><span class="sr-only">{{ lang('TOPICCLAIM_NOTE') }}{{ lang('COLON') }} </span>{{ claim.NOTE }}</span>{% endif %}
+						</div>
+					</dt>
+					<dd class="moderation">
+						<span>
+							<i class="icon fas fa-fw {{ TOPICCLAIM_ICON }}" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPICCLAIM_HELD_BY') }}{{ lang('COLON') }} </span>{{ claim.USER }}<br>
+							{{ claim.TIME }}<br>
+							<a href="{{ claim.U_MANAGE }}">{% if claim.S_CAN_MANAGE %}{{ lang('TOPICCLAIM_MANAGE') }}{% else %}{{ lang('TOPICCLAIM_PAGE_TITLE') }}{% endif %}<span class="sr-only">{{ lang('COLON') }} {{ claim.TOPIC_TITLE }}</span></a>
+						</span>
+					</dd>
+				</dl>
+			</li>
+		{% endfor %}
+		</ul>
+
+		<div class="action-bar bar-bottom">
+			<div class="pagination">
+				{{ TOPICCLAIM_TOTAL }}
+				{% if loops.pagination|length %}
+					{% include 'pagination.html' %}
+				{% else %}
+					&bull; {{ PAGE_NUMBER }}
+				{% endif %}
+			</div>
+		</div>
+	{% else %}
+		<p class="notopics"><strong>{{ lang('TOPICCLAIM_NO_CLAIMS') }}</strong></p>
+	{% endif %}
+
+	</div>
+</div>
+
+{% include 'mcp_footer.html' %}

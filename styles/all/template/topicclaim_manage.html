@@ -1,0 +1,106 @@
+{% include 'overall_header.html' %}
+
+<h2 class="topic-title" id="topicclaim_topic"><a href="{{ U_TOPICCLAIM_TOPIC }}">{{ TOPICCLAIM_TOPIC_TITLE }}</a></h2>
+<p><a href="{{ U_TOPICCLAIM_FORUM }}">{{ TOPICCLAIM_FORUM_NAME }}</a></p>
+
+<form id="topicclaim" method="post" action="{{ U_TOPICCLAIM_ACTION }}" class="topicclaim-page" aria-labelledby="topicclaim_heading topicclaim_topic">
+<div class="panel">
+	<div class="inner">
+	<h3 id="topicclaim_heading">{{ lang('TOPICCLAIM_PAGE_TITLE') }}</h3>
+	<p>{{ lang('TOPICCLAIM_PAGE_EXPLAIN') }}
+		{% if TOPICCLAIM_EXPIRE_DAYS %}{{ lang('TOPICCLAIM_EXPIRE_NOTICE', TOPICCLAIM_EXPIRE_DAYS) }}{% endif %}
+		{% if S_TOPICCLAIM_RELEASE_LOCKED and not S_TOPICCLAIM_LOCKED %}{{ lang('TOPICCLAIM_LOCKED_RELEASE') }}{% endif %}
+	</p>
+
+	<fieldset>
+	{% if S_TOPICCLAIM_CLAIMED %}
+		<dl>
+			<dt>{{ lang('TOPICCLAIM_HELD_BY') }}{{ lang('COLON') }}</dt>
+			<dd>{{ TOPICCLAIM_USER }}</dd>
+		</dl>
+		<dl>
+			<dt>{{ lang('TOPICCLAIM_SINCE') }}{{ lang('COLON') }}</dt>
+			<dd>{{ TOPICCLAIM_TIME }}</dd>
+		</dl>
+		{% if not S_TOPICCLAIM_CAN_MANAGE and not S_TOPICCLAIM_CAN_TAKEOVER %}
+		<dl>
+			<dt>{{ lang('TOPICCLAIM_NOTE') }}{{ lang('COLON') }}</dt>
+			<dd>{% if TOPICCLAIM_NOTE %}<span class="topicclaim-note">{{ TOPICCLAIM_NOTE }}</span>{% else %}{{ lang('TOPICCLAIM_NO_NOTE') }}{% endif %}</dd>
+		</dl>
+		{% endif %}
+	{% else %}
+		<p role="status"><strong>{{ lang('TOPICCLAIM_NOT_CLAIMED_YET') }}</strong></p>
+	{% endif %}
+
+	{% set show_note = (not S_TOPICCLAIM_CLAIMED and not (S_TOPICCLAIM_LOCKED and S_TOPICCLAIM_RELEASE_LOCKED)) or S_TOPICCLAIM_CAN_MANAGE or S_TOPICCLAIM_CAN_TAKEOVER %}
+	{% if show_note %}
+		<dl>
+			<dt><label for="topicclaim_note">{{ lang('TOPICCLAIM_NOTE') }}{{ lang('COLON') }}</label><br><span id="topicclaim_note_explain">{{ lang('TOPICCLAIM_NOTE_EXPLAIN', TOPICCLAIM_NOTE_MAX) }}</span></dt>
+			<dd><input type="text" class="inputbox autowidth" id="topicclaim_note" name="topicclaim_note" size="60" maxlength="{{ TOPICCLAIM_NOTE_MAX }}" value="{{ TOPICCLAIM_NOTE }}" aria-describedby="topicclaim_note_explain"></dd>
+		</dl>
+	{% endif %}
+	</fieldset>
+
+	{% if S_TOPICCLAIM_CLAIMED and S_TOPICCLAIM_CAN_TAKEOVER %}
+		<p id="topicclaim_takeover_explain">{{ lang('TOPICCLAIM_TAKEOVER_EXPLAIN', TOPICCLAIM_USER) }}</p>
+	{% elseif S_TOPICCLAIM_CLAIMED and not S_TOPICCLAIM_CAN_MANAGE %}
+		<p>{{ lang('TOPICCLAIM_VIEW_ONLY') }}</p>
+	{% elseif not S_TOPICCLAIM_CLAIMED and S_TOPICCLAIM_LOCKED and S_TOPICCLAIM_RELEASE_LOCKED %}
+		<p>{{ lang('TOPICCLAIM_LOCKED_NOTICE') }}</p>
+	{% endif %}
+
+	<fieldset class="submit-buttons">
+	{% if not S_TOPICCLAIM_CLAIMED %}
+		{% if not (S_TOPICCLAIM_LOCKED and S_TOPICCLAIM_RELEASE_LOCKED) %}
+			<button type="submit" class="button" name="topicclaim_action" value="claim">{{ lang('TOPICCLAIM_CLAIM') }}</button>
+		{% endif %}
+	{% else %}
+		{% if S_TOPICCLAIM_CAN_MANAGE %}
+			<button type="submit" class="button" name="topicclaim_action" value="note">{{ lang('TOPICCLAIM_SAVE_NOTE') }}</button>
+		{% endif %}
+		{% if S_TOPICCLAIM_CAN_TAKEOVER %}
+			<button type="submit" class="button" name="topicclaim_action" value="takeover" aria-describedby="topicclaim_takeover_explain">{{ lang('TOPICCLAIM_TAKEOVER') }}</button>
+		{% endif %}
+	{% endif %}
+	{{ S_FORM_TOKEN }}
+	</fieldset>
+	</div>
+</div>
+
+{% if S_TOPICCLAIM_CAN_MANAGE %}
+<div class="panel">
+	<div class="inner">
+	{% if S_TOPICCLAIM_CAN_TRANSFER %}
+	<h3>{{ lang('TOPICCLAIM_TRANSFER') }}</h3>
+	<fieldset>
+		<dl>
+			<dt><label for="topicclaim_user">{{ lang('TOPICCLAIM_TRANSFER_TO') }}{{ lang('COLON') }}</label><br><span id="topicclaim_user_explain">{{ lang('TOPICCLAIM_TRANSFER_EXPLAIN') }}</span></dt>
+			<dd>
+				<select id="topicclaim_user" name="topicclaim_user" aria-describedby="topicclaim_user_explain" required>
+				{% for moderator in loops.topicclaim_moderators %}
+					<option value="{{ moderator.USER_ID }}">{{ moderator.USERNAME }}</option>
+				{% endfor %}
+				</select>
+				<button type="submit" class="button" name="topicclaim_action" value="transfer">{{ lang('TOPICCLAIM_TRANSFER') }}</button>
+			</dd>
+		</dl>
+	</fieldset>
+	{% endif %}
+
+	<h3>{{ lang('TOPICCLAIM_RELEASE') }}</h3>
+	<p id="topicclaim_release_explain">{{ lang('TOPICCLAIM_RELEASE_EXPLAIN') }}</p>
+	<fieldset class="submit-buttons">
+		<button type="submit" class="button" name="topicclaim_action" value="release" aria-describedby="topicclaim_release_explain">{{ lang('TOPICCLAIM_RELEASE') }}</button>
+	</fieldset>
+	</div>
+</div>
+{% endif %}
+</form>
+
+<p class="jumpbox-return">
+	<a href="{{ U_TOPICCLAIM_RETURN }}" class="left-box arrow-{{ S_CONTENT_FLOW_BEGIN }}">
+		<i class="icon fas fa-fw fa-angle-{{ S_CONTENT_FLOW_BEGIN }}" aria-hidden="true"></i><span>{% if S_TOPICCLAIM_RETURN_MCP %}{{ lang('MCP_TOPICCLAIM_CLAIMS') }}{% else %}{{ lang('RETURN_TO_TOPIC') }}{% endif %}</span>
+	</a>
+</p>
+
+{% include 'overall_footer.html' %}

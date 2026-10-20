@@ -1,0 +1,62 @@
+parameters:
+    tables.phpbbmodders.topicclaim.claims: '%core.table_prefix%topicclaim_claims'
+
+services:
+    phpbbmodders.topicclaim.claims:
+        class: phpbbmodders\topicclaim\claims
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@log'
+            - '@notification_manager'
+            - '@user'
+            - '%tables.phpbbmodders.topicclaim.claims%'
+
+    phpbbmodders.topicclaim.controller.manage:
+        class: phpbbmodders\topicclaim\controller\manage
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.topicclaim.claims'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbbmodders.topicclaim.listener:
+        class: phpbbmodders\topicclaim\event\listener
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbbmodders.topicclaim.claims'
+        tags:
+            - { name: event.listener }
+
+    phpbbmodders.topicclaim.cron.release:
+        class: phpbbmodders\topicclaim\cron\release
+        arguments:
+            - '@config'
+            - '@phpbbmodders.topicclaim.claims'
+        calls:
+            - [set_name, [cron.task.phpbbmodders.topicclaim.release]]
+        tags:
+            - { name: cron.task }
+
+    phpbbmodders.topicclaim.notification.type.claim:
+        class: phpbbmodders\topicclaim\notification\claim
+        parent: notification.type.base
+        # Symfony 3.4 (phpBB 3.3.x) does not let a service with a parent take "public" from _defaults.
+        public: true
+        shared: false
+        calls:
+            - [set_user_loader, ['@user_loader']]
+        tags:
+            - { name: notification.type }
