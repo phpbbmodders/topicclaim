@@ -28,7 +28,7 @@ The [wiki](https://github.com/phpbbmodders/topicclaim/wiki) has the full documen
 </tr>
 </table>
 
-Click an image for the full size. See the [screenshot gallery](docs/images/screenshots/README.md) for the rest.
+Click an image for the full size. See the [Screenshots](https://github.com/phpbbmodders/topicclaim/wiki/Screenshots) wiki page for the rest.
 
 ## Permissions
 
