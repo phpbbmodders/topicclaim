@@ -22,5 +22,5 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, [
-	'TOPICCLAIM_NOT_ENABLEABLE'	=> 'Topic Claim could not be enabled. It needs phpBB 3.3.19 or later and PHP 7.4.0 or later.',
+	'TOPICCLAIM_NOT_ENABLEABLE'	=> 'Topic Claim could not be enabled. It needs phpBB 3.3.19 or later and PHP 8.3.36 or later.',
 ]);
