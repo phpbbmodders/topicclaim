@@ -13,4 +13,5 @@ tests/			export-ignore
 .gitattributes	export-ignore
 phpunit.xml.*	export-ignore
 README.md		export-ignore
-docs/images/	export-ignore
+docs/			export-ignore
+.editorconfig	export-ignore
